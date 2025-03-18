@@ -9,6 +9,17 @@ from scipy.spatial.distance import euclidean
 # Diretórios do projeto
 csv_path = Path("webapp/model/tabela-nutricional-frutas.csv") 
 model_path = Path("webapp/model/modelo_pesos.pth")  
+gdrive_url = "https://drive.google.com/uc?id=1r713aBkYORtJsTb3XihRg0AUoWWL005q"
+
+def download_model():
+    """Baixa os pesos do modelo do Google Drive se não existirem."""
+    if not model_path.exists():
+        print("Pesos do modelo não encontrados. Baixando do Google Drive...")
+        try:
+            gdown.download(gdrive_url, str(model_path), fuzzy=True, quiet=False)
+            print(f"Modelo salvo em: {model_path}")
+        except Exception as e:
+            raise FileNotFoundError(f"Erro ao baixar o modelo: {e}")
 
 def load_nutrition_data():
     """Carrega o arquivo CSV contendo os dados nutricionais."""
@@ -18,6 +29,7 @@ def load_nutrition_data():
     else:
         raise FileNotFoundError(f"Erro: O arquivo CSV não foi encontrado: {csv_path}")
 
+download_model()
 df_nutricional = load_nutrition_data()
 class_names = df_nutricional["Fruta (100g)"].tolist()
 num_classes = len(class_names)
