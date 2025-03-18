@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado da Classificação</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/result.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Resultado da Classificação</h1>
+
+        {% for item in results %}
+        <div class="result-item">
+            <strong>Nome da Fruta:</strong> {{ item.fruit_name }} <br>
+            <strong>Probabilidade:</strong> {{ item.probability }} <br>
+            
+            {% if item.nutritional_info %}
+            <div class="nutrition-info">
+                <h3>Informações Nutricionais (100g)</h3>
+                <ul>
+                    {% for key, value in item.nutritional_info.items() %}
+                        {% if key != "Fruta (100g)" %}  
+                        <li><strong>{{ key }}:</strong> {{ value }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+            {% else %}
+            <p><em>Informações nutricionais não disponíveis.</em></p>
+            {% endif %}
+            
+            {% if item.recommended_fruit and loop.first %}  <!-- Exibe apenas para a fruta mais provável -->
+            <div class="recommended-fruit">
+                <h3>Fruta Recomendada</h3>
+                <p>Uma possível alternativa nutricional em nossa base de dados para <strong>{{ item.fruit_name }}</strong> é a <strong>{{ item.recommended_fruit }}, com essas informações nutricionais</strong>.</p>
+                {% if item.recommended_info %}
+                <ul>
+                    {% for key, value in item.recommended_info.items() %}
+                        {% if key != "Fruta (100g)" %}
+                        <li><strong>{{ key }}:</strong> {{ value }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+        <hr>
+        {% endfor %}
+
+        <div class="chart-container">
+            <canvas id="probabilityChart"></canvas>
+        </div>
+
+        <a href="/" class="back-button">Voltar para Início</a>
+    </div>
+</body>
+</html>
